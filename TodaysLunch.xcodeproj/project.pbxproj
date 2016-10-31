@@ -18,6 +18,7 @@
 		999C962A1DC61F1500112D96 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 999C96291DC61F1500112D96 /* TodayViewController.swift */; };
 		999C962D1DC61F1500112D96 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 999C962B1DC61F1500112D96 /* MainInterface.storyboard */; };
 		999C96311DC61F1500112D96 /* TodayExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 999C96241DC61F1500112D96 /* TodayExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		99F079711DC77B3900A0913E /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99F079701DC77B3900A0913E /* Menu.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +78,7 @@
 		999C96291DC61F1500112D96 /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
 		999C962C1DC61F1500112D96 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		999C962E1DC61F1500112D96 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		99F079701DC77B3900A0913E /* Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +180,7 @@
 			isa = PBXGroup;
 			children = (
 				999C96291DC61F1500112D96 /* TodayViewController.swift */,
+				99F079701DC77B3900A0913E /* Menu.swift */,
 				999C962B1DC61F1500112D96 /* MainInterface.storyboard */,
 				999C962E1DC61F1500112D96 /* Info.plist */,
 			);
@@ -379,6 +382,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				99F079711DC77B3900A0913E /* Menu.swift in Sources */,
 				999C962A1DC61F1500112D96 /* TodayViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -680,6 +684,7 @@
 				999C96331DC61F1500112D96 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
