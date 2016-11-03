@@ -13,60 +13,52 @@ class Menu: NSObject {
     var date: Date? = nil
     var title: String = "n/a"
 
-    public enum RetrieveMenuError: Error {
-        case notConvertible(Any?)
-        case JSONSerialization
-    }
-
-    func update(date: Date, title: String) -> (Menu)
+    // WebAPIからメニューデータを取得し、指定UILabelのテキストにセットする
+    func retrieve(label: UILabel, date: Date) -> (Void)
     {
-        self.date = date
-        self.title = title
-        return self
-    }
+        // 進捗表示
+        label.text = "Receiving data..."
 
-    func retrieve(label: UILabel, date: Date) -> (NCUpdateResult)
-    {
-        // build url
+        // WebAPIのURL構築
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd"
         df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale!
         let url = URL(string: "https://tweet-lunch-bot.herokuapp.com/shops/1/menus/" + df.string(from: date) + ".json")!
 
-        // get REST response
+        // WebAPIからレスポンス(JSON)を取得（非同期）
         let config = URLSessionConfiguration.default
         let session = URLSession(configuration: config)
         print("set URL:" + url.debugDescription)
         let task = session.dataTask(with: url, completionHandler: {
-            (data, response, error) -> Void in
+            (data, response, error) -> (Void) in
             if error != nil {
                 print(error!.localizedDescription)
+                // 進捗表示
+                label.text = "(ERROR: URLSession#dataTask)"
             } else {
                 do {
                     if let json = try JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
                     {
-                        // prepare menu
                         print(json)
-                        let menuTitle: String = (json["title"] is String ? json["title"] as! String : "メニューなし")
+                        // UILabelに表示する文字列を作成
+                        self.date = date
+                        self.title = (json["title"] is String ? json["title"] as! String : "メニューなし")
 
-                        // result
-                        self.update(date: date, title: menuTitle)
-
-                        // print result via main thread
+                        // 元のメインスレッドにて結果表示するよう、非同期で処理予約
                         DispatchQueue.main.async(execute: {
                             label.text = String(format: "%@    %@", arguments: [self.printable_release(), self.title])
                         })
                     }
-                    ////return NCUpdateResult.newData
                 } catch {
                     print("error in JSONSerialization")
-                    //throw RetrieveMenuError.JSONSerialization("error in JSONSerialization")
+                    // 進捗表示
+                    label.text = "(ERROR: JSONSerialization.jsonObject)"
                 }
             }
         })
         task.resume()
 
-        return NCUpdateResult.noData
+        return
     }
 
     // self.dateを YYYY/MM/DD(@@@) 形式で返却する

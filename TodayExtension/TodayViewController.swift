@@ -14,53 +14,41 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     @IBOutlet weak var menu: UILabel!
     @IBOutlet weak var table: UITableView!
 
-    var last_menu: Menu
     var print_days = 1
 
+    // コンストラクタ
     required init(coder aDecoder: NSCoder) {
-        last_menu = Menu()
         super.init(coder: aDecoder)!
-        NotificationCenter.default.addObserver(self, selector: #selector(TodayViewController.updateMenu as (TodayViewController) -> (Date, UILabel) -> (NCUpdateResult)),name: UserDefaults.didChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(TodayViewController.updateMenu as (TodayViewController) -> (Date, UILabel) -> (Void)),name: UserDefaults.didChangeNotification, object: nil)
     }
 
+    // TableView更新用(行数)
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return print_days
     }
+
+    // TableView更新用(行ごとの更新)
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> (UITableViewCell) {
         let cell = table.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath)
 
         let label2 = table.viewWithTag(2) as! UILabel
-        label2.text = "receiving data..."
+        label2.text = ""
         let target_date = Calendar.current.date(byAdding: .day, value: indexPath.row, to: Date())!
         updateMenu(date: target_date, label: label2)
 
         return cell
     }
 
-    func updateMenu(date: Date, label: UILabel) -> (NCUpdateResult) {
-        // get today's date
-        let today = date
-        print("get today's date.")
-
+    // 指定日のメニューを更新し、UILabelにセットするシンタックスシュガー
+    func updateMenu(date: Date, label: UILabel) -> (Void) {
         // already hold todays' menu?
-        if last_menu.date != nil && last_menu.date == today {
-            // already received.
-            //menu.text = last_menu.title
+        if 1 != 1 {
+            // メニューデータ取得済み
             print("INFO: already received.")
-            return NCUpdateResult.noData
-
         } else {
-            // receive todays' menu.
-
-
-            //menu.text = "receiving menu data..."
-            //do {
-                return last_menu.retrieve(label: label, date: today)
-            //} catch {
-            //    self.menu.text = "error in JSONSerialization"
-            //}
+            // WebAPIを使用しメニューデータを取得・表示する
+            Menu().retrieve(label: label, date: date)
         }
-        ////return last_menu.retrieve(controller: self, date: today)return NCUpdateResult.noData
     }
 
     func widgetPerformUpdate(completionHandler: @escaping ((NCUpdateResult) -> Void)) {
@@ -115,7 +103,4 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-    // 直近７日間のメニューを取得する
-    //func get
 }
