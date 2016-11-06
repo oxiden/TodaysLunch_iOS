@@ -14,10 +14,11 @@ class Menu: NSObject {
     var title: String = "n/a"
 
     // WebAPIからメニューデータを取得し、指定UILabelのテキストにセットする
-    func retrieve(label: UILabel, date: Date) -> (Void)
+    func retrieve(labelDate: UILabel, labelTitle: UILabel, date: Date) -> (Void)
     {
         // 進捗表示
-        label.text = "Receiving data..."
+        labelDate.text = Menu.printable_release(date: date)
+        labelTitle.text = "Receiving data..."
 
         // WebAPIのURL構築
         let df = DateFormatter()
@@ -34,7 +35,7 @@ class Menu: NSObject {
             if error != nil {
                 print(error!.localizedDescription)
                 // 進捗表示
-                label.text = "(ERROR: URLSession#dataTask)"
+                labelTitle.text = "(ERROR: URLSession#dataTask)"
             } else {
                 do {
                     if let json = try JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
@@ -44,15 +45,29 @@ class Menu: NSObject {
                         self.date = date
                         self.title = (json["title"] is String ? json["title"] as! String : "メニューなし")
 
-                        // 元のメインスレッドにて結果表示するよう、非同期で処理予約
                         DispatchQueue.main.async(execute: {
-                            label.text = String(format: "%@    %@", arguments: [self.printable_release(), self.title])
+                            // 元のメインスレッドにて結果表示するよう、非同期で処理予約
+                            labelTitle.text = self.title
+                            // 次回描画に備えてApp Groupsでキャッシュする
+                            let ag :UserDefaults = UserDefaults(suiteName: "group.TodaysLunchMenu")!
+                            var agData = ag.dictionary(forKey: "1") as? Dictionary<String, String> ?? Dictionary<String, String>()
+                            print(agData)
+                            var store = Dictionary<String, String>()
+                            store[Menu.storable_release(date: date)] = self.title
+                            print(store)
+                            // lock
+                            self.synced(lock: self) {
+//                                agData?[Menu.storable_release(date: date)] = self.title
+                                agData.updateValue(self.title, forKey: Menu.storable_release(date: date))
+                                ag.setValue(agData, forKeyPath: "1")
+                                ag.synchronize()
+                            }
                         })
                     }
                 } catch {
                     print("error in JSONSerialization")
                     // 進捗表示
-                    label.text = "(ERROR: JSONSerialization.jsonObject)"
+                    labelTitle.text = "(ERROR: JSONSerialization.jsonObject)"
                 }
             }
         })
@@ -61,25 +76,36 @@ class Menu: NSObject {
         return
     }
 
-    // self.dateを YYYY/MM/DD(@@@) 形式で返却する
-    func printable_release() -> (String) {
-        assert(date != nil, "Menu#date is mandatory")
+    // 各URLSession#dataTask通信処理間の同期を行う
+    func synced(lock: AnyObject, closure: () -> ()) {
+        objc_sync_enter(lock)
+        closure()
+        objc_sync_exit(lock)
+    }
 
+    // self.dateを YYYY/MM/DD(@@@) 形式で返却する（画面表示用）
+    class func printable_release(date: Date) -> (String) {
+
+        // DateFormatter
         let df = DateFormatter()
         df.dateFormat = "yyyy/MM/dd"
         df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale!
 
-        return String(format: "%@(%@)", arguments: [df.string(from: self.date!), getWeekdaySymbol()])
+        // 指定日の曜日の短縮名(月, 火など)を取得
+        let cal: Calendar = Calendar(identifier: .gregorian)
+        let comp: DateComponents = cal.dateComponents([.weekday], from: date)
+        let weekday: Int = comp.weekday!
+        let weekdaySymbol = df.shortWeekdaySymbols[weekday - 1]
+
+        return String(format: "%@(%@)", arguments: [df.string(from: date), weekdaySymbol])
     }
 
-    // 指定日の曜日の短縮名(月, 火など)を取得
-    private func getWeekdaySymbol() -> (String) {
-        let cal: Calendar = Calendar(identifier: .gregorian)
-        let comp: DateComponents = cal.dateComponents([.weekday], from: self.date!)
-        let weekday: Int = comp.weekday!
-
+    // self.dateを YYYYMMDD 形式で返却する（App GroupsのDictionaryキー用）
+    class func storable_release(date: Date) -> (String) {
         let df = DateFormatter()
+        df.dateFormat = "yyyyMMdd"
         df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale!
-        return df.shortWeekdaySymbols[weekday - 1]
+
+        return String(format: "%@", arguments: [df.string(from: date)])
     }
 }

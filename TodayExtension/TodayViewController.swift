@@ -19,7 +19,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     // コンストラクタ
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)!
-        NotificationCenter.default.addObserver(self, selector: #selector(TodayViewController.updateMenu as (TodayViewController) -> (Date, UILabel) -> (Void)),name: UserDefaults.didChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(TodayViewController.updateMenu as (TodayViewController) -> (Date, UILabel, UILabel) -> (Void)),name: UserDefaults.didChangeNotification, object: nil)
     }
 
     // TableView更新用(行数)
@@ -33,24 +33,47 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
 
         let label2 = table.viewWithTag(2) as! UILabel
         label2.text = ""
+        let label3 = table.viewWithTag(3) as! UILabel
+        label3.text = ""
         let target_date = Calendar.current.date(byAdding: .day, value: indexPath.row, to: Date())!
-        updateMenu(date: target_date, label: label2)
+        updateMenu(date: target_date, label2: label2, label3: label3)
 
         return cell
     }
 
     // 指定日のメニューを更新し、UILabelにセットするシンタックスシュガー
-    func updateMenu(date: Date, label: UILabel) -> (Void) {
+    func updateMenu(date: Date, label2: UILabel, label3: UILabel) -> (Void) {
         // already hold todays' menu?
-        if 1 != 1 {
+        let cached = menuCached(date: date)
+        if cached != nil {
             // メニューデータ取得済み
-            print("INFO: already received.")
+            print("INFO: already received.(key=[" + Menu.storable_release(date: date) + "], value=[" + cached! + "])")
+            label2.text = Menu.printable_release(date: date)
+            label3.text = cached!
         } else {
             // WebAPIを使用しメニューデータを取得・表示する
-            Menu().retrieve(label: label, date: date)
+            Menu().retrieve(labelDate: label2, labelTitle: label3, date: date)
         }
     }
 
+    // App Groupsからキャッシュデータを取得する
+    private func menuCached(date: Date) -> (String?) {
+        let ag :UserDefaults = UserDefaults(suiteName: "group.TodaysLunchMenu")!
+        let agData = ag.dictionary(forKey: "1") as? Dictionary<String, String>
+        let title = agData?[Menu.storable_release(date: date)]
+        if title != nil {
+            // メニューデータ取得済み
+            print(agData!)
+            print("INFO: cache found")
+            return title
+        } else {
+            // データキャッシュなし
+            print("INFO: cache not found")
+            return nil
+        }
+    }
+
+    // ウィジェットの再描画要否をOSに回答する
     func widgetPerformUpdate(completionHandler: @escaping ((NCUpdateResult) -> Void)) {
         print("INFO: widgetPerformUpdate")
         // Perform any setup necessary in order to update the view.
@@ -58,7 +81,6 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         // If an error is encountered, use NCUpdateResult.Failed
         // If there's no update required, use NCUpdateResult.NoData
         // If there's an update, use NCUpdateResult.NewData
-        //let ret: NCUpdateResult = updateMenu()
         completionHandler(NCUpdateResult.newData)
     }
 
