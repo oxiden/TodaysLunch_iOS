@@ -16,7 +16,7 @@ class Menu: NSObject {
     // WebAPIからメニューデータを取得し、指定UILabelのテキストにセットする
     func retrieve(labelDate: UILabel, labelTitle: UILabel, date: Date) -> (Void)
     {
-        // 進捗表示
+        // 初期表示
         labelDate.text = Menu.printable_release(date: date)
         labelTitle.text = "Receiving data..."
 
@@ -34,40 +34,36 @@ class Menu: NSObject {
             (data, response, error) -> (Void) in
             if error != nil {
                 print(error!.localizedDescription)
-                // 進捗表示
-                labelTitle.text = "(ERROR: URLSession#dataTask)"
+                // 元のメインスレッドにて結果表示するよう、非同期で処理予約
+                DispatchQueue.main.async(execute: {
+                    labelTitle.text = "(ERROR: URLSession#dataTask)"
+                })
             } else {
                 do {
                     if let json = try JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
                     {
-                        print(json)
-                        // UILabelに表示する文字列を作成
-                        self.date = date
-                        self.title = (json["title"] is String ? json["title"] as! String : "メニューなし")
-
+                        // 元のメインスレッドにて結果表示するよう、非同期で処理予約
                         DispatchQueue.main.async(execute: {
-                            // 元のメインスレッドにて結果表示するよう、非同期で処理予約
+                            print("Received JSON:")
+                            print(json)
+                            // UILabelに文字列をセット
+                            self.date = date
+                            self.title = (json["title"] is String ? json["title"] as! String : "メニューなし")
                             labelTitle.text = self.title
-                            // 次回描画に備えてApp Groupsでキャッシュする
-                            let ag :UserDefaults = UserDefaults(suiteName: "group.TodaysLunchMenu")!
-                            var agData = ag.dictionary(forKey: "1") as? Dictionary<String, String> ?? Dictionary<String, String>()
-                            print(agData)
-                            var store = Dictionary<String, String>()
-                            store[Menu.storable_release(date: date)] = self.title
-                            print(store)
-                            // lock
-                            self.synced(lock: self) {
-//                                agData?[Menu.storable_release(date: date)] = self.title
-                                agData.updateValue(self.title, forKey: Menu.storable_release(date: date))
-                                ag.setValue(agData, forKeyPath: "1")
-                                ag.synchronize()
-                            }
+                            // 次回描画に備えてUserDefaultsでキャッシュする
+                            let ud: UserDefaults = UserDefaults(suiteName: "group.TodaysLunchMenu")!
+                            var udDict = ud.dictionary(forKey: "1") ?? Dictionary()
+                            udDict.updateValue(self.title, forKey: Menu.storable_release(date: date))
+                            ud.set(udDict, forKey: "1")
+                            ud.synchronize()
                         })
                     }
                 } catch {
                     print("error in JSONSerialization")
-                    // 進捗表示
-                    labelTitle.text = "(ERROR: JSONSerialization.jsonObject)"
+                    // 元のメインスレッドにて結果表示するよう、非同期で処理予約
+                    DispatchQueue.main.async(execute: {
+                        labelTitle.text = "(ERROR: JSONSerialization.jsonObject)"
+                    })
                 }
             }
         })
@@ -76,16 +72,8 @@ class Menu: NSObject {
         return
     }
 
-    // 各URLSession#dataTask通信処理間の同期を行う
-    func synced(lock: AnyObject, closure: () -> ()) {
-        objc_sync_enter(lock)
-        closure()
-        objc_sync_exit(lock)
-    }
-
     // self.dateを YYYY/MM/DD(@@@) 形式で返却する（画面表示用）
     class func printable_release(date: Date) -> (String) {
-
         // DateFormatter
         let df = DateFormatter()
         df.dateFormat = "yyyy/MM/dd"
@@ -100,7 +88,7 @@ class Menu: NSObject {
         return String(format: "%@(%@)", arguments: [df.string(from: date), weekdaySymbol])
     }
 
-    // self.dateを YYYYMMDD 形式で返却する（App GroupsのDictionaryキー用）
+    // self.dateを YYYYMMDD 形式で返却する（UserDefaultsのDictionaryキー用）
     class func storable_release(date: Date) -> (String) {
         let df = DateFormatter()
         df.dateFormat = "yyyyMMdd"

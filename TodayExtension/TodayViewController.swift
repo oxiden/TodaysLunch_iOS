@@ -19,7 +19,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     // コンストラクタ
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)!
-        NotificationCenter.default.addObserver(self, selector: #selector(TodayViewController.updateMenu as (TodayViewController) -> (Date, UILabel, UILabel) -> (Void)),name: UserDefaults.didChangeNotification, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(TodayViewController.updateMenu as (TodayViewController) -> (Date, UILabel, UILabel) -> (Void)),name: UserDefaults.didChangeNotification, object: nil)
     }
 
     // TableView更新用(行数)
@@ -56,14 +56,14 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         }
     }
 
-    // App Groupsからキャッシュデータを取得する
+    // UserDefaultsからキャッシュデータを取得する
     private func menuCached(date: Date) -> (String?) {
-        let ag :UserDefaults = UserDefaults(suiteName: "group.TodaysLunchMenu")!
-        let agData = ag.dictionary(forKey: "1") as? Dictionary<String, String>
-        let title = agData?[Menu.storable_release(date: date)]
+        let ud: UserDefaults = UserDefaults(suiteName: "group.TodaysLunchMenu")!
+        let udDict = ud.dictionary(forKey: "1") ?? Dictionary()
+        let title = udDict[Menu.storable_release(date: date)] as! String?
         if title != nil {
             // メニューデータ取得済み
-            print(agData!)
+            //print(udDict)
             print("INFO: cache found")
             return title
         } else {
