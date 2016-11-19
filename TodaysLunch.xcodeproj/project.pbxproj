@@ -79,6 +79,7 @@
 		999C962C1DC61F1500112D96 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		999C962E1DC61F1500112D96 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		99AB20611DD6AE3D00F17BA5 /* TodayExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TodayExtension.entitlements; sourceTree = "<group>"; };
+		99AB20621DD6AE4D00F17BA5 /* TodaysLunch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TodaysLunch.entitlements; sourceTree = "<group>"; };
 		99F079701DC77B3900A0913E /* Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -141,6 +142,7 @@
 		999C95F11DC5FDB800112D96 /* TodaysLunch */ = {
 			isa = PBXGroup;
 			children = (
+				99AB20621DD6AE4D00F17BA5 /* TodaysLunch.entitlements */,
 				999C95F21DC5FDB800112D96 /* AppDelegate.swift */,
 				999C95F41DC5FDB800112D96 /* ViewController.swift */,
 				999C95F61DC5FDB800112D96 /* Main.storyboard */,
