@@ -106,17 +106,28 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
 
     // "表示を増やす"/"表示を減らす"選択時の処理
     func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
-        if (activeDisplayMode == NCWidgetDisplayMode.compact)
-        {
+        switch (activeDisplayMode) {
+        case NCWidgetDisplayMode.compact:
+            print("activeDisplayMode=expanded")
             // ビューの高さ変更(Compactにする)
             self.preferredContentSize = maxSize
             // 表示データ更新
             print_days = 1
-        } else {
-            // ビューの高さ変更(最大にする)
-            self.preferredContentSize = CGSize(width: 0, height: 340)
-            // 表示データ更新
-            print_days = 7
+        case NCWidgetDisplayMode.expanded:
+            print("activeDisplayMode=expanded")
+            var widgetHeight = maxSize.height
+            if widgetHeight < 230 {
+                // ビューの高さ変更(中にする)
+                widgetHeight = 175
+                // 表示データ更新
+                print_days = 3
+            } else {
+                // ビューの高さ変更(最大にする)
+                widgetHeight = 340
+                // 表示データ更新
+                print_days = 7
+            }
+            self.preferredContentSize = CGSize(width: 0, height: widgetHeight)
         }
         table.reloadData()
     }
