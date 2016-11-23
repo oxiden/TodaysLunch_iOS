@@ -8,6 +8,7 @@
 
 import UIKit
 import NotificationCenter
+import Alamofire
 
 class Menu: NSObject {
     var date: Date? = nil
@@ -27,47 +28,44 @@ class Menu: NSObject {
         let url = URL(string: "https://tweet-lunch-bot.herokuapp.com/shops/1/menus/" + df.string(from: date) + ".json")!
 
         // WebAPIからレスポンス(JSON)を取得（非同期）
-        let config = URLSessionConfiguration.default
-        let session = URLSession(configuration: config)
         print("set URL:" + url.debugDescription)
-        let task = session.dataTask(with: url, completionHandler: {
-            (data, response, error) -> (Void) in
-            if error != nil {
-                print(error!.localizedDescription)
+        Alamofire.request(url).validate().responseJSON {
+            (response) -> (Void) in
+            switch response.result {
+            case .failure(let error):
+                debugPrint("ERROR: response.result.failure.")
+                debugPrint(error)
                 // 元のメインスレッドにて結果表示するよう、非同期で処理予約
                 DispatchQueue.main.async(execute: {
-                    labelTitle.text = "(ERROR: URLSession#dataTask)"
+                    labelTitle.text = "(ERROR: \(error))"
                 })
-            } else {
-                do {
-                    if let json = try JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
-                    {
-                        // 元のメインスレッドにて結果表示するよう、非同期で処理予約
-                        DispatchQueue.main.async(execute: {
-                            print("Received JSON:")
-                            print(json)
-                            // UILabelに文字列をセット
-                            self.date = date
-                            self.title = (json["title"] is String ? json["title"] as! String : "メニューなし")
-                            labelTitle.text = self.title
-                            // 次回描画に備えてUserDefaultsでキャッシュする
-                            let ud: UserDefaults = UserDefaults(suiteName: "group.TodaysLunchMenu")!
-                            var udDict = ud.dictionary(forKey: "1") ?? Dictionary()
-                            udDict.updateValue(self.title, forKey: Menu.storable_release(date: date))
-                            ud.set(udDict, forKey: "1")
-                            ud.synchronize()
-                        })
-                    }
-                } catch {
-                    print("error in JSONSerialization")
+            case .success:
+                if let json = response.result.value as? [String: Any] {
                     // 元のメインスレッドにて結果表示するよう、非同期で処理予約
                     DispatchQueue.main.async(execute: {
-                        labelTitle.text = "(ERROR: JSONSerialization.jsonObject)"
+                        debugPrint("Received JSON:")
+                        debugPrint(json)
+                        // UILabelに文字列をセット
+                        self.date = date
+                        self.title = (json["title"] is String ? json["title"] as! String : "メニューなし")
+                        labelTitle.text = self.title
+                        // 次回描画に備えてUserDefaultsでキャッシュする
+                        let ud: UserDefaults = UserDefaults(suiteName: "group.TodaysLunchMenu")!
+                        var udDict = ud.dictionary(forKey: "1") ?? Dictionary()
+                        udDict.updateValue(self.title, forKey: Menu.storable_release(date: date))
+                        ud.set(udDict, forKey: "1")
+                        ud.synchronize()
+                    })
+                } else {
+                    debugPrint("ERROR: response is unparsable.")
+                    debugPrint(response.result.value ?? "-")
+                    // 元のメインスレッドにて結果表示するよう、非同期で処理予約
+                    DispatchQueue.main.async(execute: {
+                        labelTitle.text = "(ERROR: サーバーエラー)"
                     })
                 }
             }
-        })
-        task.resume()
+        }
 
         return
     }
