@@ -35,34 +35,28 @@ class Menu: NSObject {
             case .failure(let error):
                 debugPrint("ERROR: response.result.failure.")
                 debugPrint(error)
-                // 元のメインスレッドにて結果表示するよう、非同期で処理予約
-                DispatchQueue.main.async(execute: {
-                    labelTitle.text = "(ERROR: \(error))"
-                })
+                // 結果表示
+                labelTitle.text = "(ERROR: \(error))"
             case .success:
+                // 結果表示
                 if let json = response.result.value as? [String: Any] {
-                    // 元のメインスレッドにて結果表示するよう、非同期で処理予約
-                    DispatchQueue.main.async(execute: {
-                        debugPrint("Received JSON:")
-                        debugPrint(json)
-                        // UILabelに文字列をセット
-                        self.date = date
-                        self.title = (json["title"] is String ? json["title"] as! String : "メニューなし")
-                        labelTitle.text = self.title
-                        // 次回描画に備えてUserDefaultsでキャッシュする
-                        let ud: UserDefaults = UserDefaults(suiteName: "group.TodaysLunchMenu")!
-                        var udDict = ud.dictionary(forKey: "1") ?? Dictionary()
-                        udDict.updateValue(self.title, forKey: Menu.storable_release(date: date))
-                        ud.set(udDict, forKey: "1")
-                        ud.synchronize()
-                    })
+                    debugPrint("Received JSON:")
+                    debugPrint(json)
+                    // UILabelに文字列をセット
+                    self.date = date
+                    self.title = (json["title"] is String ? json["title"] as! String : "メニューなし")
+                    labelTitle.text = self.title
+                    // 次回描画に備えてUserDefaultsでキャッシュする
+                    let ud: UserDefaults = UserDefaults(suiteName: "group.TodaysLunchMenu")!
+                    var udDict = ud.dictionary(forKey: "1") ?? Dictionary()
+                    udDict.updateValue(self.title, forKey: Menu.storable_release(date: date))
+                    ud.set(udDict, forKey: "1")
+                    ud.synchronize()
                 } else {
                     debugPrint("ERROR: response is unparsable.")
                     debugPrint(response.result.value ?? "-")
-                    // 元のメインスレッドにて結果表示するよう、非同期で処理予約
-                    DispatchQueue.main.async(execute: {
-                        labelTitle.text = "(ERROR: サーバーエラー)"
-                    })
+                    // 結果表示
+                    labelTitle.text = "(ERROR: サーバーエラー)"
                 }
             }
         }
