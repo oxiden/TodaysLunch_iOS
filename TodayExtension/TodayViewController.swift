@@ -8,6 +8,7 @@
 
 import UIKit
 import NotificationCenter
+import CommonFramework
 
 class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataSource, UITableViewDelegate {
 
@@ -47,7 +48,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         let cached = menuCached(date: date)
         if cached != nil {
             // メニューデータ取得済み
-            print("INFO: already received.(key=[" + Menu.storable_release(date: date) + "], value=[" + cached! + "])")
+            debugPrint("INFO: already received.(key=[\(Menu.storable_release(date: date))], value=[\(cached!)])")
             label2.text = Menu.printable_release(date: date)
             label3.text = cached!
         } else {
@@ -58,24 +59,23 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
 
     // UserDefaultsからキャッシュデータを取得する
     private func menuCached(date: Date) -> (String?) {
-        let ud: UserDefaults = UserDefaults(suiteName: "group.TodaysLunchMenu")!
-        let udDict = ud.dictionary(forKey: "1") ?? Dictionary()
+        let ud: UserDefaults = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
+        let udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
         let title = udDict[Menu.storable_release(date: date)] as! String?
         if title != nil {
             // メニューデータ取得済み
-            //print(udDict)
-            print("INFO: cache found")
+            debugPrint("INFO: cache found")
             return title
         } else {
             // データキャッシュなし
-            print("INFO: cache not found")
+            debugPrint("INFO: cache not found")
             return nil
         }
     }
 
     // ウィジェットの再描画要否をOSに回答する
     func widgetPerformUpdate(completionHandler: @escaping ((NCUpdateResult) -> Void)) {
-        print("INFO: widgetPerformUpdate")
+        debugPrint("INFO: widgetPerformUpdate")
         // Perform any setup necessary in order to update the view.
 
         // If an error is encountered, use NCUpdateResult.Failed
@@ -108,13 +108,13 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
         switch (activeDisplayMode) {
         case NCWidgetDisplayMode.compact:
-            print("activeDisplayMode=expanded")
+            debugPrint("activeDisplayMode=expanded")
             // ビューの高さ変更(Compactにする)
             self.preferredContentSize = maxSize
             // 表示データ更新
             print_days = 1
         case NCWidgetDisplayMode.expanded:
-            print("activeDisplayMode=expanded")
+            debugPrint("activeDisplayMode=expanded")
             var widgetHeight = maxSize.height
             if widgetHeight < 230 {
                 // ビューの高さ変更(中にする)

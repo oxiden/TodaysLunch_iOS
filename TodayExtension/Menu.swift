@@ -9,6 +9,7 @@
 import UIKit
 import NotificationCenter
 import Alamofire
+import CommonFramework
 
 class Menu: NSObject {
     var date: Date? = nil
@@ -25,10 +26,11 @@ class Menu: NSObject {
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd"
         df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale!
-        let url = URL(string: "https://tweet-lunch-bot.herokuapp.com/shops/1/menus/" + df.string(from: date) + ".json")!
+        let url = URL(string: String(format: Constant.URL, arguments: [df.string(from: date)]))!
+        debugPrint(url)
 
         // WebAPIからレスポンス(JSON)を取得（非同期）
-        print("set URL:" + url.debugDescription)
+        debugPrint("set URL:\(url.debugDescription)")
         Alamofire.request(url).validate().responseJSON {
             (response) -> (Void) in
             switch response.result {
@@ -47,10 +49,10 @@ class Menu: NSObject {
                     self.title = (json["title"] is String ? json["title"] as! String : "メニューなし")
                     labelTitle.text = self.title
                     // 次回描画に備えてUserDefaultsでキャッシュする
-                    let ud: UserDefaults = UserDefaults(suiteName: "group.TodaysLunchMenu")!
-                    var udDict = ud.dictionary(forKey: "1") ?? Dictionary()
+                    let ud: UserDefaults = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
+                    var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
                     udDict.updateValue(self.title, forKey: Menu.storable_release(date: date))
-                    ud.set(udDict, forKey: "1")
+                    ud.set(udDict, forKey: Constant.SHOP_ID)
                     ud.synchronize()
                 } else {
                     debugPrint("ERROR: response is unparsable.")

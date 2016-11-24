@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CommonFramework
 
 class ViewController: UIViewController {
     @IBOutlet weak var viewWeb: UIWebView!
@@ -15,7 +16,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         viewWeb.backgroundColor = UIColor.white
-        let req = URLRequest(url: URL(string: "https://tweet-lunch-bot.herokuapp.com/")!)
+        let req = URLRequest(url: URL(string: Constant.URL_top)!)
         viewWeb.loadRequest(req)
     }
 
