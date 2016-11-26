@@ -1129,6 +1129,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D48A02D43D03ADC76F320829 /* Pods-TodayExtension.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CODE_SIGN_ENTITLEMENTS = TodayExtension/TodayExtension.entitlements;
 				DEVELOPMENT_TEAM = HC8X5L458K;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -1145,6 +1146,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1EC8F43328F00F19B04ACCE4 /* Pods-TodayExtension.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CODE_SIGN_ENTITLEMENTS = TodayExtension/TodayExtension.entitlements;
 				DEVELOPMENT_TEAM = HC8X5L458K;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -1167,6 +1169,7 @@
 				9960BB9D1DE73D640037721F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9960BBA21DE73D640037721F /* Build configuration list for PBXNativeTarget "CommonFrameworkTests" */ = {
 			isa = XCConfigurationList;
@@ -1175,6 +1178,7 @@
 				9960BB9F1DE73D640037721F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		999C95EA1DC5FDB800112D96 /* Build configuration list for PBXProject "TodaysLunch" */ = {
 			isa = XCConfigurationList;
