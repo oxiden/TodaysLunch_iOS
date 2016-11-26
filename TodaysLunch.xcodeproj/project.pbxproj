@@ -1130,6 +1130,7 @@
 			baseConfigurationReference = D48A02D43D03ADC76F320829 /* Pods-TodayExtension.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				CODE_SIGN_ENTITLEMENTS = TodayExtension/TodayExtension.entitlements;
 				DEVELOPMENT_TEAM = HC8X5L458K;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -1147,6 +1148,7 @@
 			baseConfigurationReference = 1EC8F43328F00F19B04ACCE4 /* Pods-TodayExtension.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				CODE_SIGN_ENTITLEMENTS = TodayExtension/TodayExtension.entitlements;
 				DEVELOPMENT_TEAM = HC8X5L458K;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
