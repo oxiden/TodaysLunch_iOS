@@ -20,7 +20,6 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     // コンストラクタ
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)!
-//        NotificationCenter.default.addObserver(self, selector: #selector(TodayViewController.updateMenu as (TodayViewController) -> (Date, UILabel, UILabel) -> (Void)),name: UserDefaults.didChangeNotification, object: nil)
     }
 
     // TableView更新用(行数)
