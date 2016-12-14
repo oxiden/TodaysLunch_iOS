@@ -42,6 +42,15 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         return cell
     }
 
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row > 0 {
+            cell.alpha = 0.1
+            UIView.animate(withDuration: TimeInterval(0.4), animations: {
+                cell.alpha = 1.0
+            })
+        }
+    }
+
     // 指定日のメニューを更新し、UILabelにセットするシンタックスシュガー
     func updateMenu(date: Date, label2: UILabel, label3: UILabel) -> (Void) {
         // already hold todays' menu?
