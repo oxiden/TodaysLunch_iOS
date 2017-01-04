@@ -11,7 +11,7 @@ import NotificationCenter
 import Alamofire
 import CommonFramework
 
-class Menu: NSObject {
+class Menu: CustomDebugStringConvertible {
     var date: Date? = nil
     var title: String = "n/a"
 
@@ -27,23 +27,23 @@ class Menu: NSObject {
         df.dateFormat = "yyyy-MM-dd"
         df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale!
         let url = URL(string: String(format: Constant.URL, arguments: [df.string(from: date)]))!
-        debugPrint(url)
+        Logger.debug(url)
 
         // レスポンス(JSON)を取得（非同期）
-        debugPrint("set URL:\(url.debugDescription)")
+        Logger.debug("set URL:\(url.debugDescription)")
         Alamofire.request(url).validate().responseJSON {
             (response) -> (Void) in
             switch response.result {
             case .failure(let error):
-                debugPrint("ERROR: response.result.failure.")
-                debugPrint(error)
-                // 結果表示
+                Logger.error("response.result.failure.")
+                Logger.error(error)
+                // 結果表示Any
                 labelTitle.text = "(ERROR: \(error))"
             case .success:
                 // 結果表示
                 if let json = response.result.value as? [String: Any] {
-                    debugPrint("Received JSON:")
-                    debugPrint(json)
+                    Logger.debug("Received JSON:")
+                    Logger.debug(json)
                     // UILabelに文字列をセット
                     self.date = date
                     self.title = (json["title"] is String ? json["title"] as! String : "メニューなし")
@@ -55,8 +55,8 @@ class Menu: NSObject {
                     ud.set(udDict, forKey: Constant.SHOP_ID)
                     ud.synchronize()
                 } else {
-                    debugPrint("ERROR: response is unparsable.")
-                    debugPrint(response.result.value ?? "-")
+                    Logger.error("response is unparsable.")
+                    Logger.error(response.result.value ?? "-")
                     // 結果表示
                     labelTitle.text = "(ERROR: サーバーエラー)"
                 }
@@ -67,7 +67,11 @@ class Menu: NSObject {
     }
 
     // self.dateを YYYY/MM/DD(@@@) 形式で返却する（画面表示用）
-    class func printable_release(date: Date) -> (String) {
+    class func printable_release(date: Date?) -> (String) {
+        guard let target = date else {
+            return "0000/00/00(--)"
+        }
+
         // DateFormatter
         let df = DateFormatter()
         df.dateFormat = "yyyy/MM/dd"
@@ -75,11 +79,11 @@ class Menu: NSObject {
 
         // 指定日の曜日の短縮名(月, 火など)を取得
         let cal: Calendar = Calendar(identifier: .gregorian)
-        let comp: DateComponents = cal.dateComponents([.weekday], from: date)
+        let comp: DateComponents = cal.dateComponents([.weekday], from: target)
         let weekday: Int = comp.weekday!
         let weekdaySymbol = df.shortWeekdaySymbols[weekday - 1]
 
-        return String(format: "%@(%@)", arguments: [df.string(from: date), weekdaySymbol])
+        return String(format: "%@(%@)", arguments: [df.string(from: target), weekdaySymbol])
     }
 
     // self.dateを YYYYMMDD 形式で返却する（UserDefaultsのDictionaryキー用）
@@ -89,5 +93,10 @@ class Menu: NSObject {
         df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale!
 
         return String(format: "%@", arguments: [df.string(from: date)])
+    }
+
+    // CustomDebugString
+    var debugDescription: String {
+        return "Menu(date:\(Menu.printable_release(date: self.date)) title:[\(self.title)]"
     }
 }

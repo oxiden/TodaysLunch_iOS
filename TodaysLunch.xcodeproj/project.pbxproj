@@ -11,6 +11,7 @@
 		39E49D45FA432E67ACD1ACED /* Pods_TodayExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D20B7E6B2AD8DC7B0236FB6 /* Pods_TodayExtension.framework */; };
 		3BAA22CF158DABB78B72AC1A /* Pods_TodaysLunchUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 766C17CC301F0E66F9B09233 /* Pods_TodaysLunchUITests.framework */; };
 		4CB9F92B177F9FA178AC8690 /* Pods_TodaysLunch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7366DE2AB2BB13FB010FD62 /* Pods_TodaysLunch.framework */; };
+		99340D6F1E1B3BB800EE4370 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99340D6E1E1B3BB800EE4370 /* Logger.swift */; };
 		9960BB8E1DE73D640037721F /* CommonFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9960BB851DE73D630037721F /* CommonFramework.framework */; };
 		9960BB951DE73D640037721F /* CommonFrameworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9960BB941DE73D640037721F /* CommonFrameworkTests.swift */; };
 		9960BB9A1DE73D640037721F /* CommonFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9960BB851DE73D630037721F /* CommonFramework.framework */; };
@@ -109,6 +110,7 @@
 		766C17CC301F0E66F9B09233 /* Pods_TodaysLunchUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TodaysLunchUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D20B7E6B2AD8DC7B0236FB6 /* Pods_TodayExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TodayExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9855ED91F2FD8768BED5EC54 /* Pods-TodaysLunch.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TodaysLunch.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TodaysLunch/Pods-TodaysLunch.debug.xcconfig"; sourceTree = "<group>"; };
+		99340D6E1E1B3BB800EE4370 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		9960BB851DE73D630037721F /* CommonFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CommonFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9960BB881DE73D630037721F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9960BB8D1DE73D640037721F /* CommonFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CommonFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -213,6 +215,7 @@
 		9960BB861DE73D630037721F /* CommonFramework */ = {
 			isa = PBXGroup;
 			children = (
+				99340D6E1E1B3BB800EE4370 /* Logger.swift */,
 				9960BB881DE73D630037721F /* Info.plist */,
 				9960BBA31DE73DAB0037721F /* Constant.swift */,
 			);
@@ -747,6 +750,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9960BBA41DE73DAB0037721F /* Constant.swift in Sources */,
+				99340D6F1E1B3BB800EE4370 /* Logger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1033,7 +1037,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9855ED91F2FD8768BED5EC54 /* Pods-TodaysLunch.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TodaysLunch/TodaysLunch.entitlements;
 				DEVELOPMENT_TEAM = HC8X5L458K;
@@ -1050,7 +1054,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A8E7E93441AD34F2ACC83E25 /* Pods-TodaysLunch.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TodaysLunch/TodaysLunch.entitlements;
 				DEVELOPMENT_TEAM = HC8X5L458K;

@@ -36,12 +36,14 @@ class ViewController: UIViewController {
         // WebViewのリロード
         ctlRefresh.endRefreshing()
         viewWeb.reload()
+        Logger.debug("reloaded.")
         // UserDefaultsのデータをクリア
         let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
         var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
         udDict.removeAll()
         ud.set(udDict, forKey: Constant.SHOP_ID)
         ud.synchronize()
+        Logger.debug("cleared.")
     }
 
     override func didReceiveMemoryWarning() {

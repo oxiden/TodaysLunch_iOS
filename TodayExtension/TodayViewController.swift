@@ -42,7 +42,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         let cached = menuCached(for: target_date)
         if cached != nil {
             // メニューデータ取得済み
-            debugPrint("INFO: already received.(key=[\(Menu.storable_release(date: target_date))], value=[\(cached!)])")
+            Logger.info("already received.(key=[\(Menu.storable_release(date: target_date))], value=[\(cached!)])")
             label2.text = Menu.printable_release(date: target_date)
             label3.text = cached!
         } else {
@@ -70,18 +70,18 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         let title = udDict[Menu.storable_release(date: `for`)] as! String?
         if title != nil {
             // メニューデータ取得済み
-            debugPrint("INFO: cache found")
+            Logger.info("cache found")
             return title
         } else {
             // データキャッシュなし
-            debugPrint("INFO: cache not found")
+            Logger.info("cache not found")
             return nil
         }
     }
 
     // ウィジェットの再描画要否をOSに回答する
     func widgetPerformUpdate(completionHandler: @escaping ((NCUpdateResult) -> Void)) {
-        debugPrint("INFO: widgetPerformUpdate")
+        Logger.info("widgetPerformUpdate")
         // Perform any setup necessary in order to update the view.
 
         // If an error is encountered, use NCUpdateResult.Failed
@@ -114,13 +114,13 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
         switch (activeDisplayMode) {
         case NCWidgetDisplayMode.compact:
-            debugPrint("activeDisplayMode=expanded")
+            Logger.debug("activeDisplayMode=expanded")
             // ビューの高さ変更(Compactにする)
             self.preferredContentSize = maxSize
             // 表示データ更新
             print_days = 1
         case NCWidgetDisplayMode.expanded:
-            debugPrint("activeDisplayMode=expanded")
+            Logger.debug("activeDisplayMode=expanded")
             var widgetHeight = maxSize.height
             if widgetHeight < 230 {
                 // ビューの高さ変更(中にする)
