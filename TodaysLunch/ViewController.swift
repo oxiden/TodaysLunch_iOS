@@ -13,6 +13,12 @@ class ViewController: UIViewController {
     @IBOutlet weak var viewWeb: UIWebView!
     let ctlRefresh: UIRefreshControl = UIRefreshControl()
 
+    // コンストラクタ
+    required init(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)!
+    }
+
+    // ビュー追加設定
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -31,7 +37,7 @@ class ViewController: UIViewController {
         ctlRefresh.endRefreshing()
         viewWeb.reload()
         // UserDefaultsのデータをクリア
-        let ud: UserDefaults = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
+        let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
         var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
         udDict.removeAll()
         ud.set(udDict, forKey: Constant.SHOP_ID)

@@ -15,6 +15,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     @IBOutlet weak var menu: UILabel!
     @IBOutlet weak var table: UITableView!
 
+    // 表示する件数
     var print_days = 1
 
     // コンストラクタ
@@ -36,11 +37,23 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         let label3 = table.viewWithTag(3) as! UILabel
         label3.text = ""
         let target_date = Calendar.current.date(byAdding: .day, value: indexPath.row, to: Date())!
-        updateMenu(date: target_date, label2: label2, label3: label3)
+
+        // 指定日のメニューを更新し、UILabelにセットする
+        let cached = menuCached(for: target_date)
+        if cached != nil {
+            // メニューデータ取得済み
+            debugPrint("INFO: already received.(key=[\(Menu.storable_release(date: target_date))], value=[\(cached!)])")
+            label2.text = Menu.printable_release(date: target_date)
+            label3.text = cached!
+        } else {
+            // WebAPIを使用しメニューデータを取得・表示する
+            Menu().retrieve(labelDate: label2, labelTitle: label3, date: target_date)
+        }
 
         return cell
     }
 
+    // TableView更新用(フェードイン効果)
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row > 0 {
             cell.alpha = 0.1
@@ -50,26 +63,11 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         }
     }
 
-    // 指定日のメニューを更新し、UILabelにセットするシンタックスシュガー
-    func updateMenu(date: Date, label2: UILabel, label3: UILabel) -> (Void) {
-        // already hold todays' menu?
-        let cached = menuCached(date: date)
-        if cached != nil {
-            // メニューデータ取得済み
-            debugPrint("INFO: already received.(key=[\(Menu.storable_release(date: date))], value=[\(cached!)])")
-            label2.text = Menu.printable_release(date: date)
-            label3.text = cached!
-        } else {
-            // WebAPIを使用しメニューデータを取得・表示する
-            Menu().retrieve(labelDate: label2, labelTitle: label3, date: date)
-        }
-    }
-
     // UserDefaultsからキャッシュデータを取得する
-    private func menuCached(date: Date) -> (String?) {
-        let ud: UserDefaults = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
+    private func menuCached(`for`: Date) -> (String?) {
+        let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
         let udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
-        let title = udDict[Menu.storable_release(date: date)] as! String?
+        let title = udDict[Menu.storable_release(date: `for`)] as! String?
         if title != nil {
             // メニューデータ取得済み
             debugPrint("INFO: cache found")
@@ -105,7 +103,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         self.extensionContext?.widgetLargestAvailableDisplayMode = NCWidgetDisplayMode.expanded
 
         // メニュー対象
-        menu.text = "夕花のランチ"
+        menu.text = Constant.SHOP_TITLE
 
         // 初期表示
         print_days = 1

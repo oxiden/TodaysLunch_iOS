@@ -29,7 +29,7 @@ class Menu: NSObject {
         let url = URL(string: String(format: Constant.URL, arguments: [df.string(from: date)]))!
         debugPrint(url)
 
-        // WebAPIからレスポンス(JSON)を取得（非同期）
+        // レスポンス(JSON)を取得（非同期）
         debugPrint("set URL:\(url.debugDescription)")
         Alamofire.request(url).validate().responseJSON {
             (response) -> (Void) in
@@ -49,7 +49,7 @@ class Menu: NSObject {
                     self.title = (json["title"] is String ? json["title"] as! String : "メニューなし")
                     labelTitle.text = self.title
                     // 次回描画に備えてUserDefaultsでキャッシュする
-                    let ud: UserDefaults = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
+                    let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
                     var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
                     udDict.updateValue(self.title, forKey: Menu.storable_release(date: date))
                     ud.set(udDict, forKey: Constant.SHOP_ID)
