@@ -27,8 +27,15 @@ class ViewController: UIViewController {
     }
 
     func viewReload() {
+        // WebViewのリロード
         ctlRefresh.endRefreshing()
         viewWeb.reload()
+        // UserDefaultsのデータをクリア
+        let ud: UserDefaults = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
+        var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
+        udDict.removeAll()
+        ud.set(udDict, forKey: Constant.SHOP_ID)
+        ud.synchronize()
     }
 
     override func didReceiveMemoryWarning() {
