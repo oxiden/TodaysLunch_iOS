@@ -9,6 +9,7 @@
 import UIKit
 import NotificationCenter
 import CommonFramework
+import Alamofire
 
 class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataSource, UITableViewDelegate {
 
@@ -38,6 +39,12 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         label3.text = ""
         let target_date = Calendar.current.date(byAdding: .day, value: indexPath.row, to: Date())!
 
+        // table描画1回ごとに、メニューデータキャッシュをクリアする
+        if (indexPath.row == 0) {
+            //今日より前のキャッシュをクリアする
+            menuCacheClear(for: target_date)
+        }
+
         // 指定日のメニューを更新し、UILabelにセットする
         let cached = menuCached(for: target_date)
         if cached != nil {
@@ -47,7 +54,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
             label3.text = cached!
         } else {
             // WebAPIを使用しメニューデータを取得・表示する
-            Menu().retrieve(labelDate: label2, labelTitle: label3, date: target_date)
+            menuRetrieve(for: target_date, labelDate: label2, labelTitle: label3)
         }
 
         return cell
@@ -77,6 +84,71 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
             Logger.info("cache not found")
             return nil
         }
+    }
+
+    // UserDefaultsのキャッシュデータをクリアする
+    private func menuCacheClear(`for`: Date) -> (Void) {
+        let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
+        var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
+        let target_date = Menu.storable_release(date: `for`)
+        for menu in udDict.keys {
+            Logger.debug("key=\(menu), value=\(String(describing: udDict[menu]))")
+            if target_date > menu {
+                udDict.removeValue(forKey: menu)
+                Logger.debug(" -> deleted.")
+            }
+        }
+        ud.set(udDict, forKey: Constant.SHOP_ID)
+        ud.synchronize()
+        Logger.debug("menuCacheClear done.")
+    }
+
+    // 指定日のメニューを取得して画面に表示し、キャッシュをUserDefaultsに保存する
+    private func menuRetrieve(`for`: Date, labelDate: UILabel, labelTitle: UILabel) -> (Void) {
+        // 初期表示
+        labelDate.text = Menu.printable_release(date: `for`)
+        labelTitle.text = "Receiving data..."
+
+        // WebAPIのURL構築
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd"
+        df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale!
+        let url = URL(string: String(format: Constant.URL, arguments: [df.string(from: `for`)]))!
+        Logger.debug(url)
+
+        // レスポンス(JSON)を取得（非同期）
+        Logger.debug("set URL:\(url.debugDescription)")
+        Alamofire.request(url).validate().responseJSON {
+            (response) -> (Void) in
+            switch response.result {
+            case .failure(let error):
+                Logger.error("response.result.failure.")
+                Logger.error(error)
+                // 結果表示Any
+                labelTitle.text = "(ERROR: \(error))"
+            case .success:
+                // 結果表示
+                if let json = response.result.value as? [String: Any] {
+                    Logger.debug("Received JSON:")
+                    Logger.debug(json)
+                    // UILabelに文字列をセット
+                    let title = (json["title"] is String ? json["title"] as! String : "メニューなし")
+                    labelTitle.text = title
+                    // 次回描画に備えてUserDefaultsでキャッシュする
+                    let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
+                    var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
+                    udDict.updateValue(title, forKey: Menu.storable_release(date: `for`))
+                    ud.set(udDict, forKey: Constant.SHOP_ID)
+                    ud.synchronize()
+                } else {
+                    Logger.error("response is unparsable.")
+                    Logger.error(response.result.value ?? "-")
+                    // 結果表示
+                    labelTitle.text = "(ERROR: サーバーエラー)"
+                }
+            }
+        }
+
     }
 
     // ウィジェットの再描画要否をOSに回答する
