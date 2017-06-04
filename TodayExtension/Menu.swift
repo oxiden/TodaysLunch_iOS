@@ -12,6 +12,7 @@ import NotificationCenter
 class Menu: CustomDebugStringConvertible {
     var date: Date? = nil
     var title: String = "n/a"
+    var error: String = "n/a"
 
     // self.dateを YYYY/MM/DD(@@@) 形式で返却する（画面表示用）
     class func printable_release(date: Date?) -> (String) {
@@ -44,6 +45,6 @@ class Menu: CustomDebugStringConvertible {
 
     // CustomDebugString
     var debugDescription: String {
-        return "Menu(date:\(Menu.printable_release(date: self.date)) title:[\(self.title)]"
+        return "Menu(date:\(Menu.printable_release(date: self.date)) title:[\(self.title)] error:[\(self.error)]"
     }
 }

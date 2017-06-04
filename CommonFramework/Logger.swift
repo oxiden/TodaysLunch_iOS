@@ -43,7 +43,7 @@ public class Logger {
             }
         }
         let oslog = OSLog(subsystem: Bundle.main.bundleIdentifier!, category: level)
-        os_log("%@", log: oslog, type: oslogType, String(format: (format as! NSObject).description))
+        os_log("%@", log: oslog, type: oslogType, String(format: (format as AnyObject).description))
     }
 
 }
