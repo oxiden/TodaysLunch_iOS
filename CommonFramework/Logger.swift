@@ -11,7 +11,6 @@ import os.log
 
 public class Logger {
 
-
     static public func debug(_ format: Any, params: CVarArg...) {
         _writelog(format, oslogType: .debug, args: params)
     }
