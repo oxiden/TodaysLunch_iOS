@@ -248,7 +248,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     }
 
     // 2つの日付の日数差を返す
-    func dateDifference(from: Date, to: Date) -> (Int) {
+    private func dateDifference(from: Date, to: Date) -> (Int) {
         let dateFrom = Calendar.current.dateComponents([.year, .month, .day], from: from)
         let dateTo = Calendar.current.dateComponents([.year, .month, .day], from: to)
         return Calendar.current.dateComponents([.day], from: dateFrom, to: dateTo).day!
