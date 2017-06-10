@@ -14,4 +14,5 @@ public class Constant {
     static public let SHOP_TITLE = "夕花のランチ"
     static public let URL_top = "https://tweet-lunch-bot.herokuapp.com/"
     static public let URL = "https://tweet-lunch-bot.herokuapp.com/shops/1/menus/%@.json"
+    static public let CACHE_DAYS = 1
 }
