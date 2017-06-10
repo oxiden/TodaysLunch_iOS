@@ -60,15 +60,27 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     private func menuCached(`for`: Date) -> (title: String, error: String) {
         Logger.debug("-------------------------menuCached")
         let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
-        let udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
-        let dict = udDict[Menu.storable_release(date: `for`)] as AnyObject
+        var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
+        let target_date = Menu.storable_release(date: `for`)
+        let dict = udDict[target_date] as AnyObject
         let title = dict["title"] as? String
         let error = dict["error"] as? String
         if title != nil {
             // メニューデータ取得済み
             Logger.debug("cache found")
-            Logger.debug("key=\(`for`), value=\(String(describing: title)), error=\(String(describing: error))")
-            return (title!, error!)
+            let stored_at = dict["stored_at"] as! Date
+            Logger.debug("key=\(`for`), value=\(String(describing: title)), error=\(String(describing: error)), stored_at=\(String(describing: JST(stored_at)))")
+            // メニューデータのTTL期間内？
+            if stored_at > Calendar.current.date(byAdding: .day, value: -Constant.CACHE_DAYS, to: Date())! {
+                return (title!, error!)
+            } else {
+                // キーを削除しておく
+                udDict.removeValue(forKey: target_date)
+                Logger.debug(" -> deleted.")
+                ud.set(udDict, forKey: Constant.SHOP_ID)
+                ud.synchronize()
+                return ("", "")
+            }
         } else {
             // データキャッシュなし
             Logger.debug("cache not found")
@@ -81,7 +93,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         Logger.debug("-------------------------menuCacheStore")
         let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
         var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
-        udDict.updateValue(["title": title, "error": error], forKey: Menu.storable_release(date: `for`))
+        udDict.updateValue(["title": title, "error": error, "stored_at": Date()], forKey: Menu.storable_release(date: `for`))
         ud.set(udDict, forKey: Constant.SHOP_ID)
         ud.synchronize()
         Logger.debug("menuCacheStore done.")
@@ -97,8 +109,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
             let dict = udDict[menu] as AnyObject
             let title = dict["title"] as? String ?? "n/a"
             let error = dict["error"] as? String ?? "n/a"
-            Logger.debug("key=\(menu), value=\(String(describing: title)), error=\(String(describing: error))")
-            Logger.debug("type=\(type(of: title))")
+            Logger.debug("key=\(menu), value=\(String(describing: title)), error=\(String(describing: error)))")
             if target_date > menu {
                 udDict.removeValue(forKey: menu)
                 Logger.debug(" -> deleted.")
@@ -252,5 +263,13 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         let dateFrom = Calendar.current.dateComponents([.year, .month, .day], from: from)
         let dateTo = Calendar.current.dateComponents([.year, .month, .day], from: to)
         return Calendar.current.dateComponents([.day], from: dateFrom, to: dateTo).day!
+    }
+
+    // Dateをローカルタイムゾーンで返す
+    private func JST(_ date: Date)-> (Date) {
+        let df = DateFormatter()
+        df.dateFormat = "yyyy/MM/dd HH:mm:ss Z"
+        df.timeZone = NSTimeZone.default
+        return df.date(from: df.string(from: date))!
     }
 }
