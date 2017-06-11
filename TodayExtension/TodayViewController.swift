@@ -39,7 +39,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
 
         // 指定日のメニューを更新し、UILabelにセットする
         let target_date = Calendar.current.date(byAdding: .day, value: indexPath.row, to: Date())!
-        let result = menuCached(for: target_date)
+        let result = menuCached(for: target_date, update: true)
         label2.text = Menu.printable_release(date: target_date)
         label3.text = (result.title != "") ? result.title : (result.error != "" ? result.error : "Receiving data...")
 
@@ -57,7 +57,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     }
 
     // UserDefaultsからキャッシュデータを取得する
-    private func menuCached(`for`: Date) -> (title: String, error: String) {
+    private func menuCached(`for`: Date, update: Bool = false) -> (title: String, error: String) {
         Logger.debug("-------------------------menuCached")
         let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
         var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
@@ -79,11 +79,19 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
                 Logger.debug(" -> deleted.")
                 ud.set(udDict, forKey: Constant.SHOP_ID)
                 ud.synchronize()
+                if update {
+                    // 最新のデータ取得指示
+                    menuRetrieve(for: `for`)
+                }
                 return ("", "")
             }
         } else {
             // データキャッシュなし
             Logger.debug("cache not found")
+            if update {
+                // 最新のデータ取得指示
+                menuRetrieve(for: `for`)
+            }
             return ("", "")
         }
     }
@@ -169,24 +177,9 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         Logger.debug("=========================================widgetPerformUpdate")
         // Perform any setup necessary in order to update the view.
 
-        // 表示データを準備する
-        for d in 0...print_days-1 {
-            let target_date = Calendar.autoupdatingCurrent.date(byAdding: .day, value: d, to: Date())!
-            let cached = menuCached(for: target_date)
-            if cached.title != "" {
-                // メニューデータ取得済み
-            } else {
-                // WebAPIを使用しメニューデータを取得
-                menuRetrieve(for: target_date)
-            }
-        }
-
         // If an error is encountered, use NCUpdateResult.Failed
         // If there's no update required, use NCUpdateResult.NoData
         // If there's an update, use NCUpdateResult.NewData
-
-        // OSから再描画要否を求められたこのタイミングでデータ更新を試みるが、
-        // 再描画は(非同期で)自前で行うため、ここでは常にnoDataを返却する。
         completionHandler(NCUpdateResult.noData)
     }
 
