@@ -46,16 +46,6 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         return cell
     }
 
-    // TableView更新用(フェードイン効果)
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row > 0 {
-            cell.alpha = 0.1
-            UIView.animate(withDuration: TimeInterval(0.4), animations: {
-                cell.alpha = 1.0
-            })
-        }
-    }
-
     // UserDefaultsからキャッシュデータを取得する
     private func menuCached(`for`: Date, update: Bool = false) -> (title: String, error: String) {
         Logger.debug("-------------------------menuCached")
