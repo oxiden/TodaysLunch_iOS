@@ -98,11 +98,11 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     }
 
     // UserDefaultsのキャッシュデータをクリアする
-    private func menuCacheClear(`for`: Date) -> (Void) {
+    private func menuCacheClear(before: Date) -> (Void) {
         Logger.debug("-------------------------menuCacheClear")
         let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
         var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
-        let target_date = Menu.storable_release(date: `for`)
+        let target_date = Menu.storable_release(date: before)
         for menu in udDict.keys {
             let dict = udDict[menu] as AnyObject
             let title = dict["title"] as? String ?? "n/a"
@@ -227,7 +227,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         Logger.debug("=========================================viewWillAppear")
 
         // メニューデータキャッシュをクリアする
-        menuCacheClear(for: Date())
+        menuCacheClear(before: Date())
     }
 
     // ビューが画面に完全に表示された時の処理
