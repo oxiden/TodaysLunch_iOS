@@ -60,24 +60,38 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
             Logger.debug("cache found")
             let stored_at = dict["stored_at"] as! Date
             Logger.debug("key=\(`for`), value=\(String(describing: title)), error=\(String(describing: error)), stored_at=\(String(describing: JST(stored_at)))")
-            // メニューデータのTTL期間内？
-            if stored_at > Calendar.current.date(byAdding: .day, value: -Constant.CACHE_DAYS, to: Date())! {
-                return (title!, error!)
-            } else {
-                // キーを削除しておく
-                udDict.removeValue(forKey: target_date)
-                Logger.debug(" -> deleted.")
-                ud.set(udDict, forKey: Constant.SHOP_ID)
-                ud.synchronize()
-                if update {
-                    // 最新のデータ取得指示
-                    menuRetrieve(for: `for`)
+            if title != "" {
+                // メニューデータのTTL期間内？
+                if stored_at > Calendar.current.date(byAdding: .day, value: -Constant.CACHE_DAYS, to: Date())! {
+                    return (title!, error!)
+                } else {
+                    // キーを削除しておく
+                    udDict.removeValue(forKey: target_date)
+                    Logger.debug(" -> deleted.")
+                    ud.set(udDict, forKey: Constant.SHOP_ID)
+                    ud.synchronize()
+                    if update {
+                        // 最新のデータ取得指示
+                        menuRetrieve(for: `for`)
+                    }
+                    return ("", "")
                 }
-                return ("", "")
+            } else {
+                // エラーデータのTTL期間内？
+                if stored_at > Calendar.current.date(byAdding: .minute, value: -Constant.RETRY_PERIOD_MINUTES, to: Date())! {
+                    return (title!, error!)
+                } else {
+                    if update {
+                        // 最新のデータ取得指示
+                        menuRetrieve(for: `for`)
+                    }
+                    return ("", "")
+                }
             }
         } else {
             // データキャッシュなし
             Logger.debug("cache not found")
+            Logger.debug("key=\(`for`), value=\(String(describing: title)), error=\(String(describing: error))")
             if update {
                 // 最新のデータ取得指示
                 menuRetrieve(for: `for`)
