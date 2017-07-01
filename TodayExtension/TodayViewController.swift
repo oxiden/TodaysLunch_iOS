@@ -137,7 +137,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
                 Logger.error("response.result.failure.")
                 Logger.error(error)
                 // 次回描画に備えてUserDefaultsでキャッシュする
-                self.menuCacheStore(for: `for`, title: "", error: String(describing: error))
+                self.menuCacheStore(for: `for`, title: "", error: String(format: "(%@)", error.localizedDescription))
             case .success:
                 // 結果表示
                 if let json = response.result.value as? [String: Any] {
@@ -151,7 +151,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
                     Logger.error("response is unparsable.")
                     Logger.error(response.result.value ?? "-")
                     // 次回描画に備えてUserDefaultsでキャッシュする
-                    self.menuCacheStore(for: `for`, title: "", error: String(describing: "サーバーエラー"))
+                    self.menuCacheStore(for: `for`, title: "", error: "(サーバーエラー)")
                 }
             }
             // 該当セルのみ更新 ※self.table.reloadData()はチラつくので使用しない
