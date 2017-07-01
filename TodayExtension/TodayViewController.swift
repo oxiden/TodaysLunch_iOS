@@ -18,9 +18,15 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
 
     // 表示する件数
     var print_days = 1
+    // Alamofire
+    var alamofire: Alamofire.SessionManager
 
     // コンストラクタ
     required init(coder aDecoder: NSCoder) {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = TimeInterval(Constant.REST_TIMEOUT)
+        alamofire = Alamofire.SessionManager(configuration: configuration)
+
         super.init(coder: aDecoder)!
     }
 
@@ -144,7 +150,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
 
         // レスポンス(JSON)を取得（非同期）
         Logger.debug("set URL:\(url.debugDescription)")
-        Alamofire.request(url).validate().responseJSON {
+        alamofire.request(url).validate().responseJSON {
             (response) -> (Void) in
             switch response.result {
             case .failure(let error):

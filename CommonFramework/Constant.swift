@@ -16,4 +16,5 @@ public class Constant {
     static public let URL = "https://tweet-lunch-bot.herokuapp.com/shops/1/menus/%@.json"
     static public let CACHE_DAYS = 1
     static public let RETRY_PERIOD_MINUTES = 5
+    static public let REST_TIMEOUT = 5.0 // second
 }
