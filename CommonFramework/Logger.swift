@@ -26,7 +26,7 @@ public class Logger {
 
     static private func _writelog(_ format: Any, oslogType: OSLogType, args: CVarArg...) {
         var level: String {
-            switch (oslogType) {
+            switch oslogType {
             case OSLogType.debug:
                 return "DEBUG"
             case OSLogType.default:

@@ -40,14 +40,14 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> (UITableViewCell) {
         Logger.debug("---------------------------------tableView(IndexPath)")
         let cell = table.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath)
-        let label2 = table.viewWithTag(2) as! UILabel
-        let label3 = table.viewWithTag(3) as! UILabel
+        let label2 = table.viewWithTag(2) as? UILabel
+        let label3 = table.viewWithTag(3) as? UILabel
 
         // 指定日のメニューを更新し、UILabelにセットする
         let target_date = Calendar.current.date(byAdding: .day, value: indexPath.row, to: Date())!
         let result = menuCached(for: target_date, update: true)
-        label2.text = Menu.printable_release(date: target_date)
-        label3.text = (result.title != "") ? result.title : (result.error != "" ? result.error : "Receiving data...")
+        label2?.text = Menu.printable_release(date: target_date)
+        label3?.text = (result.title != "") ? result.title : (result.error != "" ? result.error : "Receiving data...")
 
         return cell
     }
@@ -61,14 +61,14 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         let dict = udDict[target_date] as AnyObject
         let title = dict["title"] as? String
         let error = dict["error"] as? String
-        if title != nil {
+        let stored_at = dict["stored_at"] as? Date
+        if title != nil && stored_at != nil {
             // メニューデータ取得済み
             Logger.debug("cache found")
-            let stored_at = dict["stored_at"] as! Date
-            Logger.debug("key=\(`for`), value=\(String(describing: title)), error=\(String(describing: error)), stored_at=\(String(describing: JST(stored_at)))")
+            Logger.debug("key=\(`for`), value=\(String(describing: title)), error=\(String(describing: error)), stored_at=\(String(describing: JST(stored_at!)))")
             if title != "" {
                 // メニューデータのTTL期間内？
-                if stored_at > Calendar.current.date(byAdding: .day, value: -Constant.CACHE_DAYS, to: Date())! {
+                if stored_at! > Calendar.current.date(byAdding: .day, value: -Constant.CACHE_DAYS, to: Date())! {
                     return (title!, error!)
                 } else {
                     // キーを削除しておく
@@ -84,7 +84,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
                 }
             } else {
                 // エラーデータのTTL期間内？
-                if stored_at > Calendar.current.date(byAdding: .minute, value: -Constant.RETRY_PERIOD_MINUTES, to: Date())! {
+                if stored_at! > Calendar.current.date(byAdding: .minute, value: -Constant.RETRY_PERIOD_MINUTES, to: Date())! {
                     return (title!, error!)
                 } else {
                     if update {
@@ -107,7 +107,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     }
 
     // UserDefaultsにキャッシュする
-    private func menuCacheStore(`for`: Date, title: String, error: String) -> (Void) {
+    private func menuCacheStore(`for`: Date, title: String, error: String) {
         Logger.debug("-------------------------menuCacheStore")
         let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
         var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
@@ -118,7 +118,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     }
 
     // UserDefaultsのキャッシュデータをクリアする
-    private func menuCacheClear(before: Date) -> (Void) {
+    private func menuCacheClear(before: Date) {
         Logger.debug("-------------------------menuCacheClear")
         let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
         var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
@@ -139,7 +139,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     }
 
     // 指定日のメニューを取得して画面に表示し、キャッシュをUserDefaultsに保存する
-    private func menuRetrieve(`for`: Date) -> (Void) {
+    private func menuRetrieve(`for`: Date) {
         Logger.debug("-------------------------menuRetrieve")
         // WebAPIのURL構築
         let df = DateFormatter()
@@ -150,8 +150,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
 
         // レスポンス(JSON)を取得（非同期）
         Logger.debug("set URL:\(url.debugDescription)")
-        alamofire.request(url).validate().responseJSON {
-            (response) -> (Void) in
+        alamofire.request(url).validate().responseJSON { (response) -> Void in
             switch response.result {
             case .failure(let error):
                 Logger.error("response.result.failure.")
@@ -162,11 +161,15 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
                 // 結果表示
                 if let json = response.result.value as? [String: Any] {
                     Logger.debug("Received JSON:")
-                    Logger.debug(String(data: try! JSONSerialization.data(withJSONObject: json, options: .prettyPrinted), encoding: String.Encoding.utf8) as Any)
+                    do {
+                        Logger.debug(String(data: try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted), encoding: String.Encoding.utf8) as Any)
+                    } catch {
+                        Logger.debug("(parse error)")
+                    }
                     // UILabelに文字列をセット
-                    let title = (json["title"] is String ? json["title"] as! String : "メニューなし")
+                    let title = (json["title"] is String ? json["title"] as? String : "メニューなし")
                     // 次回描画に備えてUserDefaultsでキャッシュする
-                    self.menuCacheStore(for: `for`, title: title, error: "")
+                    self.menuCacheStore(for: `for`, title: title!, error: "")
                 } else {
                     Logger.error("response is unparsable.")
                     Logger.error(response.result.value ?? "-")
@@ -216,7 +219,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     // "表示を増やす"/"表示を減らす"選択時の処理
     func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
         Logger.debug("---------------------------------widgetActiveDisplayModeDidChange")
-        switch (activeDisplayMode) {
+        switch activeDisplayMode {
         case NCWidgetDisplayMode.compact:
             Logger.debug("activeDisplayMode=expanded")
             // ビューの高さ変更(Compactにする)
@@ -269,7 +272,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
     }
 
     // Dateをローカルタイムゾーンで返す
-    private func JST(_ date: Date)-> (Date) {
+    private func JST(_ date: Date) -> (Date) {
         let df = DateFormatter()
         df.dateFormat = "yyyy/MM/dd HH:mm:ss Z"
         df.timeZone = NSTimeZone.default

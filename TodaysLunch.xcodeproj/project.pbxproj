@@ -440,6 +440,7 @@
 				999C96211DC61F1500112D96 /* Frameworks */,
 				999C96221DC61F1500112D96 /* Resources */,
 				933721A8CFF182965F533E24 /* [CP] Copy Pods Resources */,
+				99E916081F127A3E00248919 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -666,6 +667,19 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TodayExtension/Pods-TodayExtension-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		99E916081F127A3E00248919 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
 		};
 		A0D930DFD6DB3B29449A6EFE /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

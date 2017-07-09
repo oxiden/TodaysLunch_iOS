@@ -10,7 +10,7 @@ import UIKit
 import NotificationCenter
 
 class Menu: CustomDebugStringConvertible {
-    var date: Date? = nil
+    var date: Date?
     var title: String = "n/a"
     var error: String = "n/a"
 

@@ -1,0 +1,10 @@
+line_length: 165
+
+disabled_rules:
+  - identifier_name
+excluded:
+  - Pods
+  - TodaysLunch/AppDelegate.swift
+  - TodaysLunchUITests
+  - TodaysLunchTests
+  - CommonFrameworkTests
