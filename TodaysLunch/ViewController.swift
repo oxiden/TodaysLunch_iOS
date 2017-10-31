@@ -32,7 +32,7 @@ class ViewController: UIViewController {
         viewWeb.scrollView.addSubview(ctlRefresh)
     }
 
-    func viewReload() {
+    @objc func viewReload() {
         // WebViewのリロード
         ctlRefresh.endRefreshing()
         viewWeb.reload()
