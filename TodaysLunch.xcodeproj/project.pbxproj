@@ -1071,7 +1071,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9855ED91F2FD8768BED5EC54 /* Pods-TodaysLunch.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TodaysLunch/TodaysLunch.entitlements;
 				DEVELOPMENT_TEAM = HC8X5L458K;
@@ -1089,7 +1089,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A8E7E93441AD34F2ACC83E25 /* Pods-TodaysLunch.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = TodaysLunch/TodaysLunch.entitlements;
 				DEVELOPMENT_TEAM = HC8X5L458K;
