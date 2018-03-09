@@ -18,16 +18,19 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
 
     // 表示する件数
     var print_days = 1
-    // Alamofire
-    var alamofire: Alamofire.SessionManager
+    // メニューマネージャ
+    var rest: MenuManager
 
     // コンストラクタ
     required init(coder aDecoder: NSCoder) {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = TimeInterval(Constant.REST_TIMEOUT)
-        alamofire = Alamofire.SessionManager(configuration: configuration)
+        let alamofire = Alamofire.SessionManager(configuration: configuration)
+        rest = MenuManager(alamofire)
 
         super.init(coder: aDecoder)!
+
+        rest.setView(self)
     }
 
     // TableView更新用(行数)
@@ -45,144 +48,11 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
 
         // 指定日のメニューを更新し、UILabelにセットする
         let target_date = Calendar.current.date(byAdding: .day, value: indexPath.row, to: Date())!
-        let result = menuCached(for: target_date, update: true)
-        label2?.text = Menu.printable_release(date: target_date)
+        let result = rest.get(for: target_date, update: true)
+        label2?.text = DateUtil.printable_release(date: target_date)
         label3?.text = (result.title != "") ? result.title : (result.error != "" ? result.error : "Receiving data...")
 
         return cell
-    }
-
-    // UserDefaultsからキャッシュデータを取得する
-    private func menuCached(`for`: Date, update: Bool = false) -> (title: String, error: String) {
-        Logger.debug("-------------------------menuCached")
-        let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
-        var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
-        let target_date = Menu.storable_release(date: `for`)
-        let dict = udDict[target_date] as AnyObject
-        let title = dict["title"] as? String
-        let error = dict["error"] as? String
-        let stored_at = dict["stored_at"] as? Date
-        if title != nil && stored_at != nil {
-            // メニューデータ取得済み
-            Logger.debug("cache found")
-            Logger.debug("key=\(`for`), value=\(String(describing: title)), error=\(String(describing: error)), stored_at=\(String(describing: JST(stored_at!)))")
-            if title != "" {
-                // メニューデータのTTL期間内？
-                if stored_at! > Calendar.current.date(byAdding: .day, value: -Constant.CACHE_DAYS, to: Date())! {
-                    return (title!, error!)
-                } else {
-                    // キーを削除しておく
-                    udDict.removeValue(forKey: target_date)
-                    Logger.debug(" -> deleted.")
-                    ud.set(udDict, forKey: Constant.SHOP_ID)
-                    ud.synchronize()
-                    if update {
-                        // 最新のデータ取得指示
-                        menuRetrieve(for: `for`)
-                    }
-                    return ("", "")
-                }
-            } else {
-                // エラーデータのTTL期間内？
-                if stored_at! > Calendar.current.date(byAdding: .minute, value: -Constant.RETRY_PERIOD_MINUTES, to: Date())! {
-                    return (title!, error!)
-                } else {
-                    if update {
-                        // 最新のデータ取得指示
-                        menuRetrieve(for: `for`)
-                    }
-                    return ("", "")
-                }
-            }
-        } else {
-            // データキャッシュなし
-            Logger.debug("cache not found")
-            Logger.debug("key=\(`for`), value=\(String(describing: title)), error=\(String(describing: error))")
-            if update {
-                // 最新のデータ取得指示
-                menuRetrieve(for: `for`)
-            }
-            return ("", "")
-        }
-    }
-
-    // UserDefaultsにキャッシュする
-    private func menuCacheStore(`for`: Date, title: String, error: String) {
-        Logger.debug("-------------------------menuCacheStore")
-        let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
-        var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
-        udDict.updateValue(["title": title, "error": error, "stored_at": Date()], forKey: Menu.storable_release(date: `for`))
-        ud.set(udDict, forKey: Constant.SHOP_ID)
-        ud.synchronize()
-        Logger.debug("menuCacheStore done.")
-    }
-
-    // UserDefaultsのキャッシュデータをクリアする
-    private func menuCacheClear(before: Date) {
-        Logger.debug("-------------------------menuCacheClear")
-        let ud = UserDefaults(suiteName: Constant.APP_GROUPS_NAME)!
-        var udDict = ud.dictionary(forKey: Constant.SHOP_ID) ?? Dictionary()
-        let target_date = Menu.storable_release(date: before)
-        for menu in udDict.keys {
-            let dict = udDict[menu] as AnyObject
-            let title = dict["title"] as? String ?? "n/a"
-            let error = dict["error"] as? String ?? "n/a"
-            Logger.debug("key=\(menu), value=\(String(describing: title)), error=\(String(describing: error)))")
-            if target_date > menu {
-                udDict.removeValue(forKey: menu)
-                Logger.debug(" -> deleted.")
-            }
-        }
-        ud.set(udDict, forKey: Constant.SHOP_ID)
-        ud.synchronize()
-        Logger.debug("menuCacheClear done.")
-    }
-
-    // 指定日のメニューを取得して画面に表示し、キャッシュをUserDefaultsに保存する
-    private func menuRetrieve(`for`: Date) {
-        Logger.debug("-------------------------menuRetrieve")
-        // WebAPIのURL構築
-        let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd"
-        df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale!
-        let url = URL(string: String(format: Constant.URL, arguments: [df.string(from: `for`)]))!
-        Logger.debug(url)
-
-        // レスポンス(JSON)を取得（非同期）
-        Logger.debug("set URL:\(url.debugDescription)")
-        alamofire.request(url).validate().responseJSON { (response) -> Void in
-            switch response.result {
-            case .failure(let error):
-                Logger.error("response.result.failure.")
-                Logger.error(error)
-                // 次回描画に備えてUserDefaultsでキャッシュする
-                self.menuCacheStore(for: `for`, title: "", error: String(format: "(%@)", error.localizedDescription))
-            case .success:
-                // 結果表示
-                if let json = response.result.value as? [String: Any] {
-                    Logger.debug("Received JSON:")
-                    do {
-                        Logger.debug(String(data: try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted), encoding: String.Encoding.utf8) as Any)
-                    } catch {
-                        Logger.debug("(parse error)")
-                    }
-                    // UILabelに文字列をセット
-                    let title = (json["title"] is String ? json["title"] as? String : "メニューなし")
-                    // 次回描画に備えてUserDefaultsでキャッシュする
-                    self.menuCacheStore(for: `for`, title: title!, error: "")
-                } else {
-                    Logger.error("response is unparsable.")
-                    Logger.error(response.result.value ?? "-")
-                    // 次回描画に備えてUserDefaultsでキャッシュする
-                    self.menuCacheStore(for: `for`, title: "", error: "(サーバーエラー)")
-                }
-            }
-            // 該当セルのみ更新 ※self.table.reloadData()はチラつくので使用しない
-            let index = self.dateDifference(from: Date(), to: `for`)
-            let row = NSIndexPath(row: index, section: 0)
-            self.table.reloadRows(at: [row as IndexPath], with: UITableViewRowAnimation.fade)
-        }
-
     }
 
     // ウィジェットの再描画要否をOSに回答する
@@ -250,7 +120,7 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         Logger.debug("=========================================viewWillAppear")
 
         // メニューデータキャッシュをクリアする
-        menuCacheClear(before: Date())
+        rest.clear(before: Date())
     }
 
     // ビューが画面に完全に表示された時の処理
@@ -262,20 +132,5 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
         Logger.debug("=========================================didReceiveMemoryWarning")
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-
-    // 2つの日付の日数差を返す
-    private func dateDifference(from: Date, to: Date) -> (Int) {
-        let dateFrom = Calendar.current.dateComponents([.year, .month, .day], from: from)
-        let dateTo = Calendar.current.dateComponents([.year, .month, .day], from: to)
-        return Calendar.current.dateComponents([.day], from: dateFrom, to: dateTo).day!
-    }
-
-    // Dateをローカルタイムゾーンで返す
-    private func JST(_ date: Date) -> (Date) {
-        let df = DateFormatter()
-        df.dateFormat = "yyyy/MM/dd HH:mm:ss Z"
-        df.timeZone = NSTimeZone.default
-        return df.date(from: df.string(from: date))!
     }
 }
