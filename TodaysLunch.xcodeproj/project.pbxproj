@@ -34,6 +34,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		995C475E2079F25F0050ADEB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 999C95E71DC5FDB800112D96 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9960BB841DE73D630037721F;
+			remoteInfo = CommonFramework;
+		};
 		9960BB8F1DE73D640037721F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 999C95E71DC5FDB800112D96 /* Project object */;
@@ -451,6 +458,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				995C475F2079F25F0050ADEB /* PBXTargetDependency */,
 			);
 			name = TodayExtension;
 			productName = TodayExtension;
@@ -823,6 +831,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		995C475F2079F25F0050ADEB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9960BB841DE73D630037721F /* CommonFramework */;
+			targetProxy = 995C475E2079F25F0050ADEB /* PBXContainerItemProxy */;
+		};
 		9960BB901DE73D640037721F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 9960BB841DE73D630037721F /* CommonFramework */;
