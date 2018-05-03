@@ -18,7 +18,7 @@ public class DateUtil {
         // DateFormatter
         let df = DateFormatter()
         df.dateFormat = "yyyy/MM/dd"
-        df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale!
+        df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale?
 
         // 指定日の曜日の短縮名(月, 火など)を取得
         let cal: Calendar = Calendar(identifier: .gregorian)

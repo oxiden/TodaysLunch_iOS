@@ -118,7 +118,7 @@ class MenuManager {
         // WebAPIのURL構築
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd"
-        df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale!
+        df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale?
         let url = URL(string: String(format: Constant.URL, arguments: [df.string(from: `for`)]))!
         Logger.debug(url)
 
@@ -160,7 +160,7 @@ class MenuManager {
     private func storable_release(date: Date) -> (String) {
         let df = DateFormatter()
         df.dateFormat = "yyyyMMdd"
-        df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale!
+        df.locale = NSLocale(localeIdentifier: "ja_JP") as Locale?
 
         return String(format: "%@", arguments: [df.string(from: date)])
     }
