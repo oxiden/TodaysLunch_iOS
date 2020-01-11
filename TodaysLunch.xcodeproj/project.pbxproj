@@ -484,23 +484,24 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0810;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = oxiden;
 				TargetAttributes = {
 					9960BB841DE73D630037721F = {
 						CreatedOnToolsVersion = 8.1;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1130;
 						ProvisioningStyle = Automatic;
 					};
 					9960BB8C1DE73D640037721F = {
 						CreatedOnToolsVersion = 8.1;
+						LastSwiftMigration = 1130;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 999C95EE1DC5FDB800112D96;
 					};
 					999C95EE1DC5FDB800112D96 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = HC8X5L458K;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1130;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -511,19 +512,21 @@
 					999C96021DC5FDB800112D96 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = HC8X5L458K;
+						LastSwiftMigration = 1130;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 999C95EE1DC5FDB800112D96;
 					};
 					999C960D1DC5FDB800112D96 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = HC8X5L458K;
+						LastSwiftMigration = 1130;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 999C95EE1DC5FDB800112D96;
 					};
 					999C96231DC61F1500112D96 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = HC8X5L458K;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1130;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -535,7 +538,7 @@
 			};
 			buildConfigurationList = 999C95EA1DC5FDB800112D96 /* Build configuration list for PBXProject "TodaysLunch" */;
 			compatibilityVersion = "Xcode 8.0";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -889,7 +892,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -915,7 +918,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = jp.oxiden.CommonFramework;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -933,7 +936,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = jp.oxiden.CommonFrameworkTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TodaysLunch.app/TodaysLunch";
 			};
 			name = Debug;
@@ -949,7 +952,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = jp.oxiden.CommonFrameworkTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TodaysLunch.app/TodaysLunch";
 			};
 			name = Release;
@@ -958,6 +961,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1020,6 +1024,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1084,7 +1089,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jp.oxiden.TodaysLunch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1101,7 +1106,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jp.oxiden.TodaysLunch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1116,7 +1121,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jp.oxiden.TodaysLunchTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TodaysLunch.app/TodaysLunch";
 			};
 			name = Debug;
@@ -1132,7 +1137,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jp.oxiden.TodaysLunchTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TodaysLunch.app/TodaysLunch";
 			};
 			name = Release;
@@ -1147,7 +1152,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jp.oxiden.TodaysLunchUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = TodaysLunch;
 			};
 			name = Debug;
@@ -1162,7 +1167,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jp.oxiden.TodaysLunchUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = TodaysLunch;
 			};
 			name = Release;
@@ -1181,7 +1186,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = jp.oxiden.TodaysLunch.TodayExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1199,7 +1204,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = jp.oxiden.TodaysLunch.TodayExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

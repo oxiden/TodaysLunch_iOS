@@ -111,6 +111,8 @@ class TodayViewController: UIViewController, NCWidgetProviding, UITableViewDataS
                 print_days = 7
             }
             self.preferredContentSize = CGSize(width: 0, height: widgetHeight)
+        @unknown default:
+            print_days = 0
         }
         table.reloadData()
     }
